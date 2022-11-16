@@ -22,10 +22,10 @@ Atmel (now Microchip) Example: `#include <avr/io.h>`
 
 Regardless of the header style, eventually a specific device header will be utilized by the preprocessor to eventually copy-paste any mention of a recognized register with the dereferenced pointer expression, with the value predefined in the header file.
 
-##Pointers! (and formatting)
+## Pointers! (and formatting)
 Within the aforementioned header files there are often dozens to hundreds of register references, typically with some base address defined, and register names associated with an offset from the defined base address. This may be done as discrete values, or in more modern implementations with struct based approaches.
 
-####STM32 Example:
+#### STM32 Example:
 Taken from `stm32f446xx.h`
 - Define a base address, in this case the peripheral address base
 `#define PERIPH_BASE           0x40000000UL`
@@ -37,7 +37,7 @@ Taken from `stm32f446xx.h`
 `#define USART1              ((USART_TypeDef *) USART1_BASE)`
 
 
-####AVR Example:
+#### AVR Example:
 Taken from `iom328p.h` and `avr/sfr_defs.h`
 - Define the base address within a wrapper function
 `#define DDRD _SFR_IO8(0x0A)`
@@ -51,7 +51,7 @@ Taken from `iom328p.h` and `avr/sfr_defs.h`
 - Once again, we should look deeper
 `#define _MMIO_BYTE(addr)  (*(volatile uint8_t *)(addr)`
 
-#AVR Analysis
+# AVR Analysis
 Through several layers of abstraction we can very clearly see what is going on, and even better we can easily draw parallels to AVR assembly such that disasseblies can actually be read.
 Shown in the example:
 - `DDRD` is defined as `(*(volatile uint8_t *)(0x0A + 0x20))`
@@ -61,7 +61,12 @@ Breaking this down from the inside out:
 - `(volatile uint8_t *)` Casts the numeric value to an unsigned volatile 8 bit pointer
 - `*()` The leading `*` dereferences the pointer, allowing us to assign or read values stored at that pointer's address
 
-####iMX.RT Example:
+Valid uses in C (avr-gcc, avr-as):
+- `*((volatile uint8_t *)0x2A) = 1;` Set bit 0 of DDRD to 1
+
+It is bad practice to use "magic numbers" as the use of `0x2A` means nothing outside of this specific case. Not portable at all, and impossible to easily maintain.
+
+#### iMX.RT Example:
 (will do later)
 
 
